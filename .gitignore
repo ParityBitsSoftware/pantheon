@@ -5,7 +5,7 @@
 *.war
 *.ear
 
-#IntelliJ Files
+# IntelliJ Files #
 *.ipr
 *.iml
 *.iws
