@@ -7,7 +7,7 @@ import java.util.Currency;
 
 /**
  * This interface represents something that has monetary amount.  This amount can be turned into a
- * concrete Money instance of a given currency.  It also can have certain arithmatic operations performed
+ * concrete Money instance of a given currency.  It also can have certain arithmetical operations performed
  * on it.  Implementations of this interface are responsible for dealing with the details of currencies
  * and as such this interface does not include operations for addition or subtraction.
  * It is highly suggested that classes which implement this interface be immutable.

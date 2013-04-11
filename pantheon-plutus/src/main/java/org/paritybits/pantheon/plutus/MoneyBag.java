@@ -1,5 +1,6 @@
 package org.paritybits.pantheon.plutus;
 
+import org.paritybits.pantheon.common.Function;
 import org.paritybits.pantheon.common.FunctionMap;
 import org.paritybits.pantheon.common.FunctionMap.PutFunction;
 import org.paritybits.pantheon.common.Immutable;
@@ -116,8 +117,9 @@ public final class MoneyBag implements MonetaryValue, Serializable {
      * @return The result of the multiplication.
      */
     public MoneyBag multiply(final BigDecimal amount) {
-        return operateOnTotals(new MoneyBagOperation() {
-            public Money performOperation(final Money total) {
+        return operateOnTotals(new Function<Money, Money>() {
+            @Override
+            public Money evaluate(final Money total) {
                 return total.multiply(amount);
             }
         });
@@ -130,8 +132,8 @@ public final class MoneyBag implements MonetaryValue, Serializable {
      * @return The result of the division.
      */
     public MoneyBag divide(final BigDecimal amount) {
-        return operateOnTotals(new MoneyBagOperation() {
-            public Money performOperation(final Money total) {
+        return operateOnTotals(new Function<Money, Money>() {
+            public Money evaluate(final Money total) {
                 return total.divide(amount);
             }
         });
@@ -143,8 +145,8 @@ public final class MoneyBag implements MonetaryValue, Serializable {
      * @return The negated amount.
      */
     public MoneyBag negate() {
-        return operateOnTotals(new MoneyBagOperation() {
-            public Money performOperation(Money amount) {
+        return operateOnTotals(new Function<Money, Money>() {
+            public Money evaluate(Money amount) {
                 return amount.negate();
             }
         });
@@ -157,8 +159,8 @@ public final class MoneyBag implements MonetaryValue, Serializable {
      * @return The amount of the percentage.
      */
     public MoneyBag percentage(final Percentage percentage) {
-        return operateOnTotals(new MoneyBagOperation() {
-            public Money performOperation(Money amount) {
+        return operateOnTotals(new Function<Money, Money>() {
+            public Money evaluate(Money amount) {
                 return amount.percentage(percentage);
             }
         });
@@ -171,18 +173,18 @@ public final class MoneyBag implements MonetaryValue, Serializable {
      * @return The compounded amount.
      */
     public MoneyBag compound(final Percentage percentage) {
-        return operateOnTotals(new MoneyBagOperation() {
-            public Money performOperation(Money amount) {
+        return operateOnTotals(new Function<Money, Money>() {
+            public Money evaluate(Money amount) {
                 return amount.compound(percentage);
             }
         });
     }
 
-    private MoneyBag operateOnTotals(final MoneyBagOperation operation) {
+    private MoneyBag operateOnTotals(final Function<Money, Money> operation) {
         Map<Currency, Money> newTotals = new HashMap<Currency, Money>();
         for (Money total : totals.values()) {
             newTotals.put(total.currency(),
-                    operation.performOperation(total));
+                    operation.evaluate(total));
         }
         return new MoneyBag(newTotals);
     }
@@ -268,7 +270,7 @@ public final class MoneyBag implements MonetaryValue, Serializable {
      * An interface to abstract out operations from the commom
      * algorithm to applying them to all the elements in a bag.
      */
-    static interface MoneyBagOperation {
+    static interface MoneyBagOperation extends Function<Money, Money> {
         Money performOperation(final Money amount);
     }
 

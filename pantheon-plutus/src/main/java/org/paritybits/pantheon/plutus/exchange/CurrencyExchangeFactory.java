@@ -12,7 +12,7 @@ import java.util.Date;
  * @version 0.9
  */
 public interface CurrencyExchangeFactory {
-	
+
 	/**
 	 * Creates a new exchange for the given date.
 	 * 

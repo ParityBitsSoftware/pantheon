@@ -57,8 +57,8 @@ public final class Money implements Serializable, Comparable<Money>, MonetaryVal
     //toString is the same as the external form.
     private transient String externalForm;
 
-    //Arithmatic operations
-    private enum MoneyOperation {
+    //Arithmetical operations
+    private enum MoneyOperation  {
         ADD {
             BigDecimal eval(BigDecimal one, BigDecimal two) {
                 return one.add(two);
