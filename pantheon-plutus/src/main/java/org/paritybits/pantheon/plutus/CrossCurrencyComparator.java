@@ -26,9 +26,9 @@ public final class CrossCurrencyComparator implements Comparator<Money>{
 	/**
 	 * Compares the two monies, normalizing the currencies if needed.
 	 * 
-	 * @param compareThis 
-	 * @param toThat
-	 * @return the result of the comparasion.
+	 * @param compareThis First money to use in comparison.
+	 * @param toThat The second money in the comparison.
+	 * @return the result of the comparison.
 	 */
 	public int compare(final Money compareThis, final Money toThat) {
 		Currency compareThisCurrency = compareThis.currency();

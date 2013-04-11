@@ -22,6 +22,7 @@ import java.util.*;
  * @version 0.9
  */
 @Immutable
+@SuppressWarnings("UnusedDeclaration")
 public final class MoneyBag implements MonetaryValue, Serializable {
 
     static final long serialVersionUID = 8812197307547270615L;

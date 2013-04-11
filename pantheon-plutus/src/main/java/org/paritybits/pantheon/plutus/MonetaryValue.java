@@ -29,13 +29,13 @@ public interface MonetaryValue {
     /**
      * Divide this MonetaryValue bu
      *
-     * @param amount
+     * @param amount The amount to divide by
      * @return The result of the division.
      */
     MonetaryValue divide(BigDecimal amount);
 
     /**
-     * Negate this MonetaryValue, equivilant to multiplying this MonetaryValue by -1.
+     * Negate this MonetaryValue, equivalent to multiplying this MonetaryValue by -1.
      *
      * @return The result of the negation.
      */

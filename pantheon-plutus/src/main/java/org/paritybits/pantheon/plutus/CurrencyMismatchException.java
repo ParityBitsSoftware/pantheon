@@ -1,5 +1,7 @@
 package org.paritybits.pantheon.plutus;
 
+import org.paritybits.pantheon.common.Immutable;
+
 import java.text.MessageFormat;
 
 /**
@@ -10,6 +12,8 @@ import java.text.MessageFormat;
  * @version 0.9
  * @see org.paritybits.pantheon.plutus.Money
  */
+@Immutable
+@SuppressWarnings("UnusedDeclaration")
 public class CurrencyMismatchException extends IllegalArgumentException {
 
     static final long serialVersionUID = -606950293579347433L;

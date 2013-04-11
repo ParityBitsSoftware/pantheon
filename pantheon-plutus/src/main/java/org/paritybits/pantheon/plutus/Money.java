@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 /**
  * Represents an amount of money by wrapping a BigDecimal amount and a Currency.
- * The class has simple arithmatic operations that work on monies with the same currency
+ * The class has simple arithmetical operations that work on monies with the same currency
  * as well as a conversion method.  This class is immutable.
  * <p/>
  * <p>This class also has a custom serialized form.  It is the string representation of the Money
@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
  * @version 0.9
  */
 @Immutable
+@SuppressWarnings("UnusedDeclaration")
 public final class Money implements Serializable, Comparable<Money>, MonetaryValue {
 
     static final long serialVersionUID = 7918032368736296520L;
@@ -97,8 +98,7 @@ public final class Money implements Serializable, Comparable<Money>, MonetaryVal
         if (amount == null || currency == null) throw new NullPointerException("Value and currency are required.");
         this.amount = amount;
         this.currency = currency;
-        this.externalForm = new StringBuilder(amount.toString()).append(' ').append(
-                currency.toString()).toString();
+        this.externalForm = amount.toString() + ' ' + currency.toString();
         this.hashCode = 29 * amount.stripTrailingZeros().hashCode();
     }
 
@@ -264,12 +264,9 @@ public final class Money implements Serializable, Comparable<Money>, MonetaryVal
         final Money other = (Money) o;
 
         //If the amount is zero don't check currency
-        if (amount.compareTo(BigDecimal.ZERO) == 0) {
-            return true;
-        } else {
-            return currency.equals(other.currency) &&
-                    amount.compareTo(other.amount) == 0;
-        }
+        return amount.compareTo(BigDecimal.ZERO) == 0 ||
+                currency.equals(other.currency) &&
+                        amount.compareTo(other.amount) == 0;
     }
 
     public int hashCode() {
