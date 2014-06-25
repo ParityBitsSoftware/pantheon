@@ -2,6 +2,8 @@ package org.paritybits.pantheon.common;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.function.Predicate;
+
 
 /**
  * Common utility functions for creating special type of predicates
@@ -17,7 +19,7 @@ public final class Predicates {
      * @return A predicate that always returns true.
      */
     public static <T> Predicate<T> tautology() {
-        return new Predicate<T>() {public Boolean evaluate(T t) {return true;}};
+        return new Predicate<T>() {public boolean test(T t) {return true;}};
     }
 
     /**
@@ -28,18 +30,7 @@ public final class Predicates {
      * @return A predicate that always returns false.
      */
     public static <T> Predicate<T> contradiction() {
-        return new Predicate<T>() {public Boolean evaluate(T t) {return false;}};
-    }
-
-    /**
-     * Creates a negated version of the given predicate
-     *
-     * @param predicate The predicate to negate
-     * @param <T> Type of object being evaluated against the predicate.
-     * @return A new predicate that will return the negation of the given predicate when evaluating the same object.
-     */
-    public static <T> Predicate<T> negate(final Predicate<T> predicate) {
-        return new Predicate<T>(){public Boolean evaluate(T t) {return !predicate.evaluate(t);}};
+        return new Predicate<T>() {public boolean test(T t) {return false;}};
     }
 
     /**
@@ -67,7 +58,8 @@ public final class Predicates {
      * for a given evaluation.
      */
     public static <T> Predicate<T> and(final Iterable<Predicate<T>> predicates) {
-        return groupedPredicate(predicates, false);
+        return groupedPredicate(predicates, GroupFunction.and);
+
     }
 
     /**
@@ -95,24 +87,50 @@ public final class Predicates {
      * for a given evaluation.
      */
     public static <T> Predicate<T> or(final Iterable<Predicate<T>> predicates) {
-        return groupedPredicate(predicates, true);
+        return groupedPredicate(predicates, GroupFunction.or);
     }
 
     private static <T> Predicate<T> groupedPredicate(final Iterable<Predicate<T>> predicates,
-                                                    final boolean returnWhen) {
+                                                    final GroupFunction groupFunction) {
+        Predicate<T> grouped = defaultPredicate();
+        for(Predicate<T> predicate : predicates) {
+            grouped = groupFunction.group(grouped, predicate);
+        }
+        return grouped;
+    }
+
+    private static enum GroupFunction {
+        and {
+            @Override
+            <T> Predicate<T> group(Predicate<T> predicate, Predicate<T> otherPredicate) {
+                return predicate.and(otherPredicate);
+            }
+        },
+        or {
+            @Override
+            <T> Predicate<T> group(Predicate<T> predicate, Predicate<T> otherPredicate) {
+                return predicate.or(otherPredicate);
+            }
+        };
+        abstract <T> Predicate<T> group(Predicate<T> predicate, Predicate<T> otherPredicate);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Predicate<T> defaultPredicate() {
         return new Predicate<T>() {
             @Override
-            public Boolean evaluate(T t) {
-                Iterator<Predicate<T>> itr = predicates.iterator();
-                if(itr.hasNext()) {
-                    while(itr.hasNext()) {
-                        Predicate<T> predicate = itr.next();
-                        if(returnWhen == predicate.evaluate(t)) return returnWhen;
-                    }
-                    return !returnWhen;
-                } else {
-                    return true;
-                }
+            public boolean test(T t) {
+                return true;
+            }
+
+            @Override
+            public Predicate<T> and(Predicate<? super T> other) {
+                return (Predicate<T>) other;
+            }
+
+            @Override
+            public Predicate<T> or(Predicate<? super T> other) {
+                return (Predicate<T>) other;
             }
         };
     }

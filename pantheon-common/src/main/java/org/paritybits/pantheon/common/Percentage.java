@@ -47,7 +47,6 @@ public final class Percentage implements Serializable, Comparable<Percentage> {
     //The external form of the Percentage, used for toString as well.  Can be parsed via valueOf.
     private transient String externalForm;
 
-    //
     private transient int hashCode;  
 
 

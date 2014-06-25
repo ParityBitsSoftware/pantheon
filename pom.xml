@@ -91,7 +91,7 @@
       </dependency>
 	</dependencies>
 	<properties>
-		<pb.java.version>1.6</pb.java.version>
+		<pb.java.version>1.8</pb.java.version>
 		<pb.junit.version>4.10</pb.junit.version>
 		<pb.jmock.version>2.5.1</pb.jmock.version>
 		<pb.mockito.version>1.8.5</pb.mockito.version>

@@ -3,6 +3,8 @@ package org.paritybits.pantheon.common;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Common utility functions for items in the common package as well as items in java.util
@@ -15,13 +17,6 @@ public final class CommonUtil {
     private static final Set<Class> IMMUTABLE_CLASSES = Collections.unmodifiableSet(new HashSet<Class>(Arrays.asList(
             Boolean.class, Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class,
             Class.class, BigInteger.class, BigDecimal.class, Currency.class)));
-
-    private static final Comparator<Comparable> DEFAULT_COMPARATOR = new Comparator<Comparable>() {
-        @Override
-        public int compare(final Comparable thisComp, final Comparable thatComp) {
-            return thisComp.compareTo(thatComp);
-        }
-    };
 
     /**
      * Gets either the value in the map for a key or the default value if there is no value.
@@ -44,83 +39,6 @@ public final class CommonUtil {
     }
 
     /**
-     * Takes a Iterable object and creates a map using the items in the Iterable as keys and with values generated
-     * by passing the keys to the function.
-     *
-     * @param from The iterable source of if items that will be the keys in the returned map.
-     * @param using The function used to calculate the values.
-     * @return A new Map that has keys from <i>from</i> and values that are the result of <i>using</i> function.
-     * @throws NullPointerException If <i>from</i> or <i>using</i> are null.
-     */
-    public static <K, V> Map<K, V> map(final Iterable<K> from, final Function<K, V> using) {
-        Map<K, V> newMap = new HashMap<K, V>();
-        mapInto(from, newMap, using);
-        return newMap;
-    }
-
-    /**
-     * Populates a map with the items in the Iterable as keys and with values generated
-     * by passing the keys to the function.
-     *
-     * @param from The iterable source of if items that will be the keys in the returned map.
-     * @param into The map that will have keys from <i>from</i> and values that are the result of <i>using</i> function
-     * added to it.
-     * @param using The function used to calculate the values.      
-     * @throws NullPointerException If <i>from</i> <i>into</i>, or <i>using</i> are null.
-     */
-    public static <K, V> void mapInto(final Iterable<K> from, final Map<K, V> into,
-                                      final Function<K, V> using) {
-        for (K key : from) {
-            into.put(key, using.evaluate(key));
-        }
-    }
-
-    /**
-     * Returns the list of values that result from applying a function to the items returned from
-     * an iterable source.
-     *
-     * @param from The iterable source of items that will be the passed to the function.
-     * @param using The function used to calculate the values.
-     * @return A List of objects that are a result of applying the function to the items in the source.
-     * @throws NullPointerException If <i>from</i> or <i>using</i> are null.
-     */
-    public static <K, V> List<V> collect(final Iterable<K> from, final Function<K, V> using) {
-        List<V> result = new ArrayList<V>();
-        collectInto(from, result, using);
-        return result;
-    }
-
-    /**
-     * Puts into a collection the results of running the given function on the given iterable source
-     *
-     * @param from The iterable source of if items that will be the passed to the function.
-     * @param into The collection that will have values from the function added to it.  If there
-     * are duplicate results and the this is a Set, subsequent results could be ignored.
-     * @param using The function used to calculate the values.
-     * @throws NullPointerException If <i>from</i> <i>into</i>, or <i>using</i> are null.
-     */
-    public static <K, V> void collectInto(final Iterable<K> from, final Collection<V> into,
-                                          final Function<K, V> using) {
-        for (K item : from) {
-            into.add(using.evaluate(item));
-        }
-    }
-
-    /**
-     * Reverse a map so that the values become keys to the original keys. If the there are duplicate values, in the
-     * original list, only one will be used for the new map.
-     *
-     * @param original The original map to reverse
-     * @return A new map with keys that are the values of the original map and the values are the keys of
-     *         the original map.
-     */
-    public static <V, K> Map<V, K> reverse(final Map<K, V> original) {
-        Map<V, K> newMap = new HashMap<V, K>();
-        for (Map.Entry<K, V> entry : original.entrySet()) {
-            newMap.put(entry.getValue(), entry.getKey());
-        }
-        return newMap;
-    }
 
     /**
      * Tests if the given object is Immutable.  An object is considered Immutable either: <ol>
@@ -182,7 +100,8 @@ public final class CommonUtil {
      */
     public static <T extends Comparable> boolean between(final T bound1, final T bound2,
                                                          final T item, final boolean strict) {
-        return between(bound1, bound2, item, strict, DEFAULT_COMPARATOR);
+        Comparator<Comparable> order = Comparator.naturalOrder();
+        return between(bound1, bound2, item, strict, order);
     }
 
     /**
@@ -240,7 +159,7 @@ public final class CommonUtil {
      * @throws NullPointerException if iterable or predicate are null.
      */
     public static <T> boolean all(final Iterable<T> items, final Predicate<T> predicate) {
-        for(T item : items) if(!predicate.evaluate(item)) return false;
+        for(T item : items) if(!predicate.test(item)) return false;
         return true;
     }
 
@@ -328,7 +247,7 @@ public final class CommonUtil {
 
 
         for(T item : items) {
-            if(predicate.evaluate(item)) count++;
+            if(predicate.test(item)) count++;
 
             //Check if we can return early
             if((count == atLeast && atMost == Integer.MAX_VALUE ) || count > atMost) break;

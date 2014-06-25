@@ -6,10 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This defines a class as <a href="http://en.wikipedia.org/wiki/Immutable_object">Immutable</a>.
- *
- * It is strongly recommended that classes that have this interface
- *
+ * This defines a class as <a href="http://en.wikipedia.org/wiki/Immutable_object">Immutable</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

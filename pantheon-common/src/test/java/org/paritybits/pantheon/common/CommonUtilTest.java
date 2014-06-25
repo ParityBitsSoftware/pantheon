@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.awt.Color.WHITE;
 import static org.junit.Assert.*;
@@ -23,33 +25,7 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"unchecked"})
 public class CommonUtilTest {
 
-    private Integer keyValues = 100;
-    private Set<Integer> keySet = new TreeSet<Integer>();
-    private Map<Integer, String> expectedMap = new HashMap<Integer, String>();
-    private List<String> expectedList = new ArrayList<String>();
-    private Function<Integer, String> function;
-    private Comparator<Integer> lastDigitComparator = new Comparator<Integer>() {
-        @Override
-        public int compare(Integer thisInt, Integer thatInt) {
-            return (thisInt % 10) - (thatInt % 10);
-        }
-    };
-
-
-    @Before
-    public void setUp() throws Exception {
-        for (Integer i = 0; i < keyValues; i++) {
-            keySet.add(i);
-            expectedMap.put(i, i.toString());
-            expectedList.add(i.toString());
-        }
-        function = new Function<Integer, String>() {
-
-            public String evaluate(Integer key) {
-                return key.toString();
-            }
-        };
-    }
+    private Comparator<Integer> lastDigitComparator = (thisInt, thatInt) -> (thisInt % 10) - (thatInt % 10);
 
 
     @Test
@@ -101,40 +77,6 @@ public class CommonUtilTest {
         assertEquals(WHITE, paint);
     }
 
-    @Test
-    public void map() {
-        assertEquals(expectedMap, CommonUtil.map(keySet, function));
-    }
-
-    @Test
-    public void mapInto() {
-        Map<Integer, String> mappedInto = new HashMap<Integer, String>();
-        CommonUtil.mapInto(keySet, mappedInto, function);
-        assertEquals(expectedMap, mappedInto);
-    }
-
-    @Test
-    public void transform() {
-        assertEquals(expectedList, CommonUtil.collect(keySet, function));
-    }
-
-    @Test
-    public void transformInto() {
-        java.util.List<String> transformedInto = new ArrayList<String>();
-        CommonUtil.collectInto(keySet, transformedInto, function);
-        assertEquals(expectedList, transformedInto);
-    }
-
-    @Test
-    public void reverse() {
-        Map<String, Integer> base = new HashMap<String, Integer>();
-        Map<Integer, String> expected = new HashMap<Integer, String>();
-        for (Integer i = 0; i < 100; i++) {
-            base.put(i.toString(), i);
-            expected.put(i, i.toString());
-        }
-        assertEquals(expected, CommonUtil.reverse(base));
-    }
 
     @Test
     public void isImmutable() {
@@ -357,9 +299,9 @@ public class CommonUtilTest {
 
     private static Predicate<Integer> createIntegerPredicate(Integer...trueIntegers) {
         Predicate<Integer> predicate = mock(Predicate.class);
-        when(predicate.evaluate(anyInt())).thenReturn(false);
+        when(predicate.test(anyInt())).thenReturn(false);
         for(Integer integer : trueIntegers) {
-            when(predicate.evaluate(integer)).thenReturn(true);
+            when(predicate.test(integer)).thenReturn(true);
         }
         return predicate;
     }
